@@ -1,13 +1,15 @@
 "use client"
-import React, { useState, useEffect, useRef } from 'react';
+import { useImage } from 'react-image';
 import { Inter } from 'next/font/google'
 import styles from './page.module.css'
 import SimulatedEventForm from './components/SimulatedEventForm'
+// import {Example} from './components/BoundingBox';
 import { Divider, Stack, Typography } from '@mui/material'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
+
   return (
     <main className={styles.main}>
       <Stack spacing={4} direction="row" alignContent="center">
@@ -26,6 +28,8 @@ export default function Home() {
           </Stack>
           <SimulatedEventForm />
         </Stack>
+        {/* <Example /> */}
+
       </Stack>
     </main>
   )
