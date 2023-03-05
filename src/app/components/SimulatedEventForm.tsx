@@ -1,15 +1,16 @@
 "use client";
 
-import  { useState, useMemo, useCallback } from 'react';
-import Button from '@mui/material/Button';
-import FormControl, { useFormControl } from '@mui/material/FormControl';
+import  { useState, useMemo } from 'react';
 import FormGroup from '@mui/material/FormGroup';
-import FormHelperText from '@mui/material/FormHelperText';
+import LoadingButton from '@mui/lab/LoadingButton';
+import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
 
 import { NBATeam } from '../constants/nba';
+import { FormControl, FormHelperText, InputLabel } from '@mui/material';
 
 // static mappings
 const nbaTeamNames = Object.values(NBATeam).filter(team => typeof team === 'string') as string[];
@@ -20,20 +21,19 @@ const nbaTeamNameMap: {[key: string]: string} = nbaTeamNames.reduce((acc, teamNa
   return acc;
 }, {} as {[key: string]: string});
 
-console.log(nbaTeamNameMap);
-
 export default function SimulatedEventForm() {
-  const [awayTeam, setAwayTeam] = useState('Atlanta Hawks');
-  const [homeTeam, setHomeTeam] = useState('LA Clippers');
+  const [awayTeam, setAwayTeam] = useState(nbaTeamNameMap[(NBATeam.ATLANTA_HAWKS as string).toLowerCase()]);
+  const [homeTeam, setHomeTeam] = useState(nbaTeamNameMap[(NBATeam.LA_CLIPPERS as string).toLowerCase()]);
   const [awayScore, setAwayScore] = useState(24);
   const [homeScore, setHomeScore] = useState(53);
+  const [loading, setLoading] = useState(false);
 
   // handlers
-  const handleAwayTeamChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAwayTeamChange = (event: SelectChangeEvent) => {
     setAwayTeam(event.target.value);
   };
 
-  const handleHomeTeamChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleHomeTeamChange = (event: SelectChangeEvent) => {
     setHomeTeam(event.target.value);
   };
 
@@ -47,11 +47,14 @@ export default function SimulatedEventForm() {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+    setLoading(true);
     const formData = {
-      awayTeam: nbaTeamNameMap[awayTeam.toLowerCase()],
-      homeTeam: nbaTeamNameMap[homeTeam.toLowerCase()]
+      awayTeam,
+      homeTeam,
+      awayScore,
+      homeScore
     };
+    console.log(formData);
     try {
       const response = await fetch('http://localhost:8080/api/generate', {
         method: 'POST',
@@ -67,39 +70,55 @@ export default function SimulatedEventForm() {
     } catch (error) {
       console.error(error);
     }
-
+    setLoading(false);
   };
   // validation
   const numErrorMessage = "Score must be less than 4 digits"
+  const scoreTooHigh = (num: number) => num > 999;
+  const nameCollisionErrored = useMemo(() => awayTeam == homeTeam, [awayTeam, homeTeam]);
+  const awayScoreErrored = useMemo(() => scoreTooHigh(awayScore), [awayScore]);
+  const homeScoreErrored = useMemo(() => scoreTooHigh(homeScore), [homeScore]);
+  const buttonDisabled = (
+    [awayTeam, homeTeam, awayScore, homeScore].some(value => !value)
+    || nameCollisionErrored || awayScoreErrored || homeScoreErrored
+  )
 
-  const buttonDisabled = [awayTeam, homeTeam, awayScore, homeScore].some(value => !value)
-  const nameValidation = (name: string) => !!nbaTeamNameMap[name.toLowerCase()];
-  const numValidation = (num: number) => num < 1000;
-  const awayTeamErrored = useMemo(() => !nameValidation(awayTeam), [awayTeam]);
-  const homeTeamErrored = useMemo(() => !nameValidation(homeTeam), [homeTeam]);
-  const awayScoreErrored = useMemo(() => !numValidation(awayScore), [awayScore]);
-  const homeScoreErrored = useMemo(() => !numValidation(homeScore), [homeScore]);
   return (
     
     <form noValidate onSubmit={handleSubmit}>
       <FormGroup sx={{ width: '25ch' }}>
-        <TextField
-          label="Away Team"
-          value={awayTeam}
-          onChange={handleAwayTeamChange}
-          required
-          error={awayTeamErrored}
-          helperText={awayTeamErrored ? "Must be a valid NBA team name" : "Enter A NBA Away Team Name"}
-        />
-        <TextField
-          label="Home Team"
+        <FormControl required error={nameCollisionErrored}>
+          <InputLabel htmlFor="away-team-select">Select NBA Away Team</InputLabel>
+          <Select
+            id="away-team-select"
+            value={awayTeam}
+            label="Away Team"
+            onChange={handleAwayTeamChange}
+          >
+            {
+              nbaTeamNames.map(
+                name => (<MenuItem key={name} value={nbaTeamNameMap[name.toLowerCase()]}>{name}</MenuItem>)
+              )
+            }
+          </Select>
+          <FormHelperText>{nameCollisionErrored ? "Must be a different team name" : "Select a NBA Away Team"}</FormHelperText>  
+        </FormControl>
+        <FormControl required error={nameCollisionErrored}>
+          <InputLabel htmlFor="home-team-select">Select NBA Home Team</InputLabel>
+          <Select
           value={homeTeam}
+          label="Home Team"
           onChange={handleHomeTeamChange}
           required
-          error={homeTeamErrored}
-          helperText={homeTeamErrored ? "Must be a valid NBA team name" : "Enter A NBA Home Team Name"}
-        />
-
+        >
+          {
+            nbaTeamNames.map(
+              name => (<MenuItem key={name} value={nbaTeamNameMap[name.toLowerCase()]}>{name}</MenuItem>)
+            )
+          }
+        </Select>
+        <FormHelperText>{nameCollisionErrored ? "Must be a different team name" : "Select a NBA Home Team"}</FormHelperText>
+        </FormControl>
         <TextField
           label="Away Score"
           value={awayScore}
@@ -118,7 +137,15 @@ export default function SimulatedEventForm() {
           error={homeScoreErrored}
           helperText={homeScoreErrored ? numErrorMessage : "Enter Home Team Score"}
         />
-        <Button type="submit" variant="contained" color="primary" disabled={buttonDisabled}>Generate</Button>
+        <LoadingButton
+          type="submit"
+          color="primary"
+          variant="outlined"
+          disabled={buttonDisabled}
+          loading={loading}
+        >
+          Generate
+        </LoadingButton>
       </FormGroup>
     </form>
   );
