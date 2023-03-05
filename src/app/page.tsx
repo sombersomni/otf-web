@@ -13,23 +13,8 @@ export default function Home() {
 
   return (
     <main className={styles.main}>
-      <Stack spacing={4} direction="row" alignContent="center">
-        <Stack
-          sx={{ width: '25vw' }}
-          spacing={2}
-          divider={<Divider orientation="horizontal" flexItem />}
-        >
-          <Stack>
-            <Typography variant="h4" gutterBottom>
-              Simulate a Generated Post
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              Generate a social posted based on the simulated values below.
-            </Typography>
-          </Stack>
-          <SimulatedEventForm />
-        </Stack>
-        <div style={{ width: 600, height: 800, background: "black" }}>
+      <Stack>
+        <div style={{ width: "80vw", height: "80vh", background: "black" }}>
           <Canvas>
             <OrthographicCamera makeDefault position={[0, 0, 200]}/>
             <Layer />

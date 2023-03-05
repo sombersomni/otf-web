@@ -85,69 +85,84 @@ export default function SimulatedEventForm() {
   )
 
   return (
-    
-    <form noValidate onSubmit={handleSubmit}>
-      <FormGroup sx={{ width: '25ch' }}>
-        <FormControl required error={nameCollisionErrored}>
-          <InputLabel htmlFor="away-team-select">Select NBA Away Team</InputLabel>
-          <Select
-            id="away-team-select"
-            value={awayTeam}
-            label="Away Team"
-            onChange={handleAwayTeamChange}
-          >
-            {
-              nbaTeamNames.map(
-                name => (<MenuItem key={name} value={nbaTeamNameMap[name.toLowerCase()]}>{name}</MenuItem>)
-              )
-            }
-          </Select>
-          <FormHelperText>{nameCollisionErrored ? "Must be a different team name" : "Select a NBA Away Team"}</FormHelperText>  
-        </FormControl>
-        <FormControl required error={nameCollisionErrored}>
-          <InputLabel htmlFor="home-team-select">Select NBA Home Team</InputLabel>
-          <Select
-          value={homeTeam}
-          label="Home Team"
-          onChange={handleHomeTeamChange}
-          required
-        >
-          {
-            nbaTeamNames.map(
-              name => (<MenuItem key={name} value={nbaTeamNameMap[name.toLowerCase()]}>{name}</MenuItem>)
-            )
-          }
-        </Select>
-        <FormHelperText>{nameCollisionErrored ? "Must be a different team name" : "Select a NBA Home Team"}</FormHelperText>
-        </FormControl>
-        <TextField
-          label="Away Score"
-          value={awayScore}
-          onChange={handleAwayScoreChange}
-          type="number"
-          required
-          error={awayScoreErrored}
-          helperText={awayScoreErrored ? numErrorMessage : "Enter Away Team Score"}
-        />
-        <TextField
-          label="Home Score"
-          value={homeScore}
-          onChange={handleHomeScoreChange}
-          type="number"
-          required
-          error={homeScoreErrored}
-          helperText={homeScoreErrored ? numErrorMessage : "Enter Home Team Score"}
-        />
-        <LoadingButton
-          type="submit"
-          color="primary"
-          variant="outlined"
-          disabled={buttonDisabled}
-          loading={loading}
-        >
-          Generate
-        </LoadingButton>
-      </FormGroup>
-    </form>
+    <Stack spacing={4} direction="row" alignContent="center">
+      <Stack
+        sx={{ width: '25vw' }}
+        spacing={2}
+        divider={<Divider orientation="horizontal" flexItem />}
+      >
+        <Stack>
+          <Typography variant="h4" gutterBottom>
+            Simulate a Generated Post
+          </Typography>
+          <Typography variant="body1" gutterBottom>
+            Generate a social posted based on the simulated values below.
+          </Typography>
+        </Stack>
+          <form noValidate onSubmit={handleSubmit}>
+            <FormGroup sx={{ width: '25ch' }}>
+              <FormControl required error={nameCollisionErrored}>
+                <InputLabel htmlFor="away-team-select">Select NBA Away Team</InputLabel>
+                <Select
+                  id="away-team-select"
+                  value={awayTeam}
+                  label="Away Team"
+                  onChange={handleAwayTeamChange}
+                >
+                  {
+                    nbaTeamNames.map(
+                      name => (<MenuItem key={name} value={nbaTeamNameMap[name.toLowerCase()]}>{name}</MenuItem>)
+                    )
+                  }
+                </Select>
+                <FormHelperText>{nameCollisionErrored ? "Must be a different team name" : "Select a NBA Away Team"}</FormHelperText>  
+              </FormControl>
+              <FormControl required error={nameCollisionErrored}>
+                <InputLabel htmlFor="home-team-select">Select NBA Home Team</InputLabel>
+                <Select
+                value={homeTeam}
+                label="Home Team"
+                onChange={handleHomeTeamChange}
+                required
+              >
+                {
+                  nbaTeamNames.map(
+                    name => (<MenuItem key={name} value={nbaTeamNameMap[name.toLowerCase()]}>{name}</MenuItem>)
+                  )
+                }
+              </Select>
+              <FormHelperText>{nameCollisionErrored ? "Must be a different team name" : "Select a NBA Home Team"}</FormHelperText>
+              </FormControl>
+              <TextField
+                label="Away Score"
+                value={awayScore}
+                onChange={handleAwayScoreChange}
+                type="number"
+                required
+                error={awayScoreErrored}
+                helperText={awayScoreErrored ? numErrorMessage : "Enter Away Team Score"}
+              />
+              <TextField
+                label="Home Score"
+                value={homeScore}
+                onChange={handleHomeScoreChange}
+                type="number"
+                required
+                error={homeScoreErrored}
+                helperText={homeScoreErrored ? numErrorMessage : "Enter Home Team Score"}
+              />
+              <LoadingButton
+                type="submit"
+                color="primary"
+                variant="outlined"
+                disabled={buttonDisabled}
+                loading={loading}
+              >
+                Generate
+              </LoadingButton>
+            </FormGroup>
+          </form>
+        </Stack>
+      </Stack>
   );
 }
