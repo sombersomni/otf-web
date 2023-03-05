@@ -32,8 +32,6 @@ export default function Home() {
         <div style={{ width: 600, height: 800, background: "black" }}>
           <Canvas>
             <OrthographicCamera makeDefault position={[0, 0, 200]}/>
-            <ambientLight intensity={0.1} />
-            <directionalLight color="red" position={[0, 0, 5]} />
             <Layer />
           </Canvas>
         </div>

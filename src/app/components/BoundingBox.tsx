@@ -10,22 +10,23 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { useDrag } from '@use-gesture/react';
 
 
-function SceneImage({src, meshRef, bind, position, handleClick}) {
-  const texture = useLoader(TextureLoader, 'nba.jpg')
+function SceneImage({src, size, meshRef, bind, position, handleClick}) {
+  const texture = useLoader(TextureLoader, src)
   return (
     <animated.mesh ref={meshRef} position={position} {...bind()} onClick={handleClick}>
-      <planeGeometry attach="geometry" args={[600, 400]} />
-      <meshBasicMaterial attach="material" map={texture} />
+      <planeGeometry attach="geometry" args={size} />
+      <meshBasicMaterial attach="material" map={texture} transparent />
     </animated.mesh>
   )
 }
 
-function SceneObject({ handleClick }) {
+function SceneObject({ handleClick, size, src }) {
   const meshRef = useRef();
-  const isOver = useRef(false)
-  const { size, viewport } = useThree();
+  const isOver = useRef(false);
+  const isSelected = useRef(false);
+  const { size: s, viewport } = useThree();
 
-  const aspect = size.width / viewport.width;
+  const aspect = s.width / viewport.width;
   console.log(aspect)
 
 
@@ -58,16 +59,21 @@ function SceneObject({ handleClick }) {
   const handlePointerMove = useCallback(
     e => {
       if (isOver.current) {
-        const x = (e.offsetX / size.width) * 2 - 1
-        const y = (e.offsetY / size.height) * -2 + 1
+        const x = (e.offsetX / s.width) * 2 - 1
+        const y = (e.offsetY / s.height) * -2 + 1
         // api.start({
         //   position: [x, y],
         // })
       }
     },
-    [api, size]
+    [api, s]
   )
 
+  const clickHandler = useCallback(
+    (e) => {
+      handleClick(e, meshRef)
+    }
+  , [meshRef])
 
   useEffect(() => {
     window.addEventListener('pointerover', handleWindowPointerOver)
@@ -100,11 +106,12 @@ function SceneObject({ handleClick }) {
 
   return (
     <SceneImage
-      src={"nba.jpg"}
+      size={size}
+      src={src}
       meshRef={meshRef}
       position={spring.position.to((x, y) => [x, y, -200])}
       bind={bind}
-      handleClick={(e) => handleClick(e, meshRef)}
+      handleClick={clickHandler}
     />
   );
 }
@@ -132,7 +139,8 @@ export const Layer = () => {
 
   return (
       <>
-        <SceneObject handleClick={handleClick} />
+        <SceneObject handleClick={handleClick} size={[600, 400]} src="nba.jpg" />
+        <SceneObject handleClick={handleClick} size={[100, 100]} src="logo.png" />
       </>
   )
 }
