@@ -1,10 +1,11 @@
 "use client"
-import { useImage } from 'react-image';
 import { Inter } from 'next/font/google'
 import styles from './page.module.css'
 import SimulatedEventForm from './components/SimulatedEventForm'
-// import {Example} from './components/BoundingBox';
+import {Layer } from './components/BoundingBox';
 import { Divider, Stack, Typography } from '@mui/material'
+import { Canvas } from '@react-three/fiber';
+import { OrthographicCamera } from '@react-three/drei'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -28,8 +29,14 @@ export default function Home() {
           </Stack>
           <SimulatedEventForm />
         </Stack>
-        {/* <Example /> */}
-
+        <div style={{ width: 600, height: 800, background: "black" }}>
+          <Canvas>
+            <OrthographicCamera makeDefault position={[0, 0, 200]}/>
+            <ambientLight intensity={0.1} />
+            <directionalLight color="red" position={[0, 0, 5]} />
+            <Layer />
+          </Canvas>
+        </div>
       </Stack>
     </main>
   )
