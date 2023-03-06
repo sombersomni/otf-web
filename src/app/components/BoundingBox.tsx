@@ -122,6 +122,7 @@ export const Layer = () => {
   const handleClick = useCallback(
     (event, meshRef) => {
       // Use raycasting to detect when the user clicks on the mesh
+      console.log(meshRef)
       console.log('clicked, enable drag')
       const raycaster = new THREE.Raycaster();
       const mouse = new THREE.Vector2();
