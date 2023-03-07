@@ -35,15 +35,10 @@ export default function Home() {
             />
               <CardMedia
                 component="img"
-                height="600"
+                height="712"
                 image="merged-img.png"
                 alt="Social Post"
               />
-              <CardContent>
-                <Typography variant="body2" color="text.secondary">
-                  Social Post on the fly, as it should be.
-                </Typography>
-              </CardContent>
             </Card>
           </Grid2>
         </Grid2>
